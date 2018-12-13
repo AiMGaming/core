@@ -178,9 +178,17 @@ class FederatedShareProvider implements IShareProvider {
 				list($token, $remoteId) = $this->askOwnerToReShare($shareWith, $share, $shareId);
 				// remote share was create successfully if we get a valid token as return
 				$send = \is_string($token) && $token !== '';
+				$this->logger->warning(
+					"Resharing is done. token is $token"
+				);
 			} catch (\Exception $e) {
 				// fall back to old re-share behavior if the remote server
 				// doesn't support flat re-shares (was introduced with ownCloud 9.1)
+
+				$this->logger->warning(
+					"Failed to notify remote server. Falling back to the old way (" . $e->getMessage() . ')'
+				);
+
 				$this->removeShareFromTable($share);
 				$shareId = $this->createFederatedShare($share);
 			}
